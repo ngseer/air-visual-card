@@ -348,12 +348,21 @@ class AirVisualCard extends HTMLElement {
         'no2': 'Nitrogen Dioxide',
         'so2': 'Sulfur Dioxide',
       }
+      const pollutantAttributeName = {        
+	'p2': 'pm_2_5',
+        'pm25': 'pm_2_5',
+        'pm10': 'pm_10',
+        'o3': 'ozone',
+        'no2': 'nitrogen_dioxide',
+        'so2': 'sulfur_dioxide',
+      }
 
       let currentCondition = '';
       let humidity = '';
       let windSpeed = '';
       let tempValue = '';
       let pollutantUnit = '';
+      let pollutantLevel = '';
       let apl = '';
       let mainPollutant = '';
 
@@ -387,8 +396,10 @@ class AirVisualCard extends HTMLElement {
             let mainPollutantState = hass.states[mainPollutantSensor.config].state;
             mainPollutant = hass.localize("component.sensor.state.airvisual__pollutant_label." + mainPollutantState);
           } else if (typeof hass.states[mainPollutantSensor.config].attributes['dominentpol'] != "undefined") {
-            pollutantUnit = pollutantUnitValue[hass.states[mainPollutantSensor.config].attributes['dominentpol']];
-            mainPollutant = mainPollutantValue[hass.states[mainPollutantSensor.config].attributes['dominentpol']];
+            let dominentpol = hass.states[mainPollutantSensor.config].attributes['dominentpol'];
+            pollutantUnit = pollutantUnitValue[dominentpol];
+            mainPollutant = mainPollutantValue[dominentpol];
+            pollutantLevel = hass.states[mainPollutantSensor.config].attributes[pollutantAttributeName[dominentpol]];
           } else {
             pollutantUnit = 'pollutant unit';
             mainPollutant = 'main pollutant';
@@ -458,7 +469,7 @@ class AirVisualCard extends HTMLElement {
             ${apl}
           </div>
           <div class="mainPollutantSensor" id="mainPollutantSensor" style="background-color: ${AQIbgColor[getAQI()]}; color: ${AQIfontColor[getAQI()]}">
-                <div class="mainPollutantSensorText">${mainPollutant} | ${pollutantUnit}</div>    
+                <div class="mainPollutantSensorText">${mainPollutant} | ${pollutantLevel} ${pollutantUnit}</div>    
           </div>     
         `;
       }
